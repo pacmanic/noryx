@@ -45,4 +45,6 @@ public class TrackService{
     public List<Track> getAllTracks(){
         return trackRepository.findAll();
     }
+
+    public Track getTrackById(Long id) { return trackRepository.findById(id).orElseThrow(() -> new RuntimeException("Track not found")); }
 }

@@ -3,6 +3,7 @@ package com.noryx.noryxbackend.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class JwtService{
     @Value("${jwt.secret}")
     private String secret;
@@ -38,9 +40,14 @@ public class JwtService{
         return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        try{
+            final String username = extractUsername(token);
+            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        }catch(Exception e){
+            log.warn("Token validation failed: {}", e.getMessage());
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token){
